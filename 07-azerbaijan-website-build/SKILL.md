@@ -293,6 +293,21 @@ Create an HTML brand card (single HTML file) showing:
 
 Save to project root and open for review.
 
+### Step 6: Generate DESIGN.md
+
+After the Brand Card, produce a structured `DESIGN.md` using the `design-system-generator` skill with Azerbaijan extensions.
+
+1. Read `00-design-references/design-md-format.md` for the base 9-section format.
+2. Select 1-2 reference DESIGN.md files from `00-design-references/references/by-aesthetic/` matching the brand direction.
+3. Generate DESIGN.md with all 9 standard sections PLUS **Section 10: Multi-Lingual Considerations**:
+   - Font verification test string: `"Əlaqə üçün bizə zəng edin. Ğəbul saatları: Ş. 09:00-18:00 | Связаться с нами"`
+   - Russian text ~30% expansion accommodation rules for layouts, buttons, and navigation
+   - Azerbaijan cultural color notes (flag colors used subtly, gold for luxury)
+   - Per-language content tone (AZ: warm/formal, RU: slightly more formal, EN: clean international)
+4. The BRAND_BRIEF.md Color Palette and Typography sections should say "See DESIGN.md for the complete design system" — BRAND_BRIEF.md retains brand voice, logo metadata, and non-design content.
+
+**Output:** `~/Azerbaijan/projects/<slug>/DESIGN.md`
+
 ### BRAND_BRIEF.md Format
 
 ```markdown
@@ -315,6 +330,8 @@ Save to project root and open for review.
 - **Display:** [Font Name] — [weights]
 - **Body:** [Font Name] — [weights]
 - **Verified:** AZ characters ✓ | Cyrillic ✓
+
+> **Note:** Complete design system specification (color tokens, typography hierarchy table, component stylings, shadow system, layout principles) is in `DESIGN.md`. The sections below are summaries — see DESIGN.md for exact values.
 
 ## Brand Voice
 - **AZ:** [description]
@@ -461,6 +478,8 @@ In `astro.config.mjs`:
 - Configure i18n routing with `az` as default locale
 
 ### Step 3: Build Design System
+
+**Read the project's `DESIGN.md` before building the design system.** Use it as the authoritative source for all CSS custom properties, font imports, typographic scale, component specs, and shadow tokens. Verify that fonts from the DESIGN.md pass the AZ/RU character verification test before proceeding.
 
 Create `src/styles/global.css`:
 - Import font packages

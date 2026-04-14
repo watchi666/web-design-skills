@@ -40,3 +40,13 @@ Interpret creatively and make unexpected choices that feel genuinely designed fo
 **IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
 
 Remember: Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+
+## Structured Output: DESIGN.md
+
+When this skill is invoked during a build pipeline (`website-rebuild`, `local-business-rebuild`, or `azerbaijan-website-build`), produce a `DESIGN.md` file as structured output alongside the visual implementation.
+
+The DESIGN.md format specification is in `00-design-references/design-md-format.md`. Reference DESIGN.md files from real brand websites (Stripe, Apple, Airbnb, Nike, Linear, etc.) are in `00-design-references/references/by-aesthetic/`.
+
+The DESIGN.md captures all design decisions made by this skill in a structured 9-section format (Visual Theme, Color Palette, Typography, Component Stylings, Layout, Depth/Elevation, Do's/Don'ts, Responsive, Agent Prompt Guide) that other agents or future sessions can consume to build pages visually consistent with the original design intent.
+
+Use the `design-system-generator` skill for step-by-step instructions on producing each section.

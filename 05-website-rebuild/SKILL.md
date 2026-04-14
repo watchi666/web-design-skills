@@ -213,7 +213,23 @@ Visual design (aesthetic, color, typography, spacing, hierarchy). UX (nav, CTAs,
 Synthesize Phases 1-4. Site architecture, design direction (invoke `frontend-design-anthropic` skill for typography, color palette, layout direction), image strategy (KEEP/ENHANCE/REPLACE/CREATE), copy strategy, SEO implementation plan, tools research placeholder, technical plan, accessibility targets. All color palettes must pass WCAG AA contrast verification.
 **Output:** `REBUILD_PLAN.md`
 
+### Phase 5b: Generate DESIGN.md
+
+After completing the Rebuild Plan, generate a `DESIGN.md` file in the project root using the `design-system-generator` skill. This is the machine-readable design system that Phase 6 will consume.
+
+1. Read `00-design-references/design-md-format.md` for the required 9-section structure.
+2. Browse `00-design-references/design-md-index.md` and select 1-2 reference DESIGN.md files that match the chosen aesthetic direction. Read them for structural inspiration.
+3. Generate the project's DESIGN.md with all 9 sections populated from the design decisions made during Phase 5 and the `frontend-design-anthropic` skill invocation.
+4. Every color must include its hex value, semantic role, and WCAG contrast ratio against its intended background.
+5. Typography must include the complete hierarchy table (role, family, size, weight, line-height, letter-spacing).
+6. Component stylings must define button states, card patterns, and input styles with exact CSS values.
+7. The "Design Direction" section in REBUILD_PLAN.md should reference the DESIGN.md file: "See DESIGN.md for the complete design system" plus a 3-line summary.
+
+**Output:** `DESIGN.md` in the project root
+
 ### Phase 6: Build the Website
+**Read the project's `DESIGN.md` before writing any visual code.** Use Section 2 (Color Palette) as the source for CSS custom properties in `global.css`. Use Section 3 (Typography) for font imports and the typographic scale. Use Section 4 (Component Stylings) for button, card, input, and nav component implementations. Use Section 6 (Depth & Elevation) for shadow tokens. The DESIGN.md is the single source of truth — do not fall back to generic Tailwind defaults when the DESIGN.md specifies a value.
+
 Invoke the `frontend-design-anthropic` skill before writing any visual code. Build sequence:
 1. **Initialize the Astro project** using the exact commands from the Tech Stack section above.
 2. **Design system first:** CSS custom properties in global.css, component primitives, layout patterns. Document WCAG contrast ratios as comments next to every color pairing.
@@ -293,6 +309,7 @@ Set up using Astro Content Collections with MDX. New posts are added by creating
 | 9 | ACCESSIBILITY_AUDIT.md |
 | 10 | COPY_CHANGES.md |
 | 11 | QA_ROUND_1.md through QA_ROUND_4.md |
+| 12 | DESIGN.md — structured design system specification with all tokens, typography, components, and shadows |
 
 ## Guiding Principles
 

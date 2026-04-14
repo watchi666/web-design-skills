@@ -57,3 +57,27 @@ After a preferred theme is selected:
 
 ## Create your Own Theme
 To handle cases where none of the existing themes work for an artifact, create a custom theme. Based on provided inputs, generate a new theme similar to the ones above. Give the theme a similar name describing what the font/color combinations represent. Use any basic description provided to choose appropriate colors/fonts. After generating the theme, show it for review and verification. Following that, apply the theme as described above.
+
+## Extended Themes (DESIGN.md Format)
+
+For build pipelines that consume DESIGN.md files (`website-rebuild`, `local-business-rebuild`, `azerbaijan-website-build`), extended versions of each theme are available in the `design-md/` directory. These include full 9-section specifications:
+
+- Complete color palette with semantic roles (not just 4 colors)
+- Typography hierarchy table with sizes, weights, line-heights, and letter-spacing
+- Component stylings (buttons with states, cards, inputs, navigation)
+- Shadow/elevation system with exact CSS values
+- Layout principles with spacing scale
+- Do's and Don'ts specific to the theme
+- Responsive behavior and breakpoints
+- Agent prompt examples with exact CSS values
+
+### Usage in Build Pipelines
+
+1. Show the theme showcase as usual
+2. Once the user picks a theme, read the DESIGN.md version from `design-md/[theme-name].md`
+3. Copy its content to the project root as `DESIGN.md`
+4. The build pipeline will consume it during code generation
+
+### Usage for Non-Build Artifacts
+
+For slides, docs, and reports, continue using the simple theme files in `themes/`. The simple format is sufficient for artifact styling and keeps things lightweight.

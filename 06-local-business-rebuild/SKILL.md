@@ -252,9 +252,20 @@ Synthesize everything into a concrete plan:
    ```
    The directory must contain at minimum: hero image, about section image, at least one services image. If it doesn't, download them now.
 
+**Generate DESIGN.md:** After defining the design direction above, formalize it as a structured `DESIGN.md` file using the `design-system-generator` skill.
+
+1. Read `00-design-references/design-md-format.md` for the 9-section format.
+2. Select 1-2 reference DESIGN.md files from `00-design-references/references/by-aesthetic/` matching the aesthetic direction.
+3. Generate `DESIGN.md` with all 9 sections. The plain English design commitment becomes Section 1 (Visual Theme) and Section 7 (Do's and Don'ts).
+4. REBUILD_PLAN.md Design Direction section should say "See DESIGN.md for the complete design system."
+
+**Output:** `DESIGN.md` in the project root (alongside REBUILD_PLAN.md)
+
 **Output:** `~/prospect-pipeline/prospects/<slug>/REBUILD_PLAN.md`
 
 ### Phase 5: Build the Website
+
+**Read the project's `DESIGN.md` before writing any code.** Translate Section 2 into CSS custom properties, Section 3 into font imports and typographic scale, Section 4 into component implementations, and Section 6 into shadow tokens. The DESIGN.md is the source of truth for all visual implementation.
 
 Before writing code, confirm images are downloaded: `ls ~/prospect-pipeline/sites/<slug>/public/images/`. If empty, go back to Phase 4 step 8.
 
@@ -435,7 +446,8 @@ Single comprehensive pass covering functional, copy, and visual:
 5. **Copy:** Read as a first-time customer. Understand in 5 seconds? Trust? Know what to do?
 6. **Visual:** Animations smooth? Typography beautiful? Whitespace balanced? Colors cohesive? Photos beautiful and relevant?
 7. **Accessibility:** Verify contrast ratios on all color pairings. Keyboard nav works. Focus indicators visible.
-8. Compare to best in industry — it should be BETTER.
+8. **Design system consistency:** Verify that every CSS custom property in `global.css` maps to a token defined in DESIGN.md. No orphan tokens, no missing tokens.
+9. Compare to best in industry — it should be BETTER.
 
 ### Broken Image Check
 Before deploying, verify ALL images load:

@@ -180,6 +180,43 @@ Premium tri-lingual website builder for Azerbaijani businesses. Every site ships
 
 ---
 
+### 8. Design System Generator (`08-design-system-generator/`)
+
+Produces structured DESIGN.md files from scratch for any business. Takes business context (name, industry, brand personality, existing colors) and generates a complete 9-section design system specification.
+
+**Key features:**
+- Step-by-step generation for all 9 DESIGN.md sections
+- Cross-references design-rules.md to enforce banned fonts/colors/layouts
+- WCAG AA contrast verification built into the workflow
+- Azerbaijan-specific extensions (Section 10: Multi-Lingual Considerations)
+- Validation checklist ensuring completeness
+
+**Use when:** Any build pipeline needs a structured design system. Invoked during the planning phase of website-rebuild, local-business-rebuild, and azerbaijan-website-build.
+
+---
+
+### Design References (`00-design-references/`)
+
+Not a skill — a shared reference library containing the DESIGN.md format specification and 10 curated brand reference files from real websites.
+
+**Organized by aesthetic category:**
+
+| Category | Brands | Best For |
+|----------|--------|----------|
+| Luxury Minimal | Stripe, Apple | Fintech, premium SaaS, cinematic |
+| Warm Editorial | Airbnb, Notion | Hospitality, marketplace, productivity |
+| Dark Premium | Linear, Vercel | Developer tools, ultra-precise |
+| Bold Energetic | Nike, Spotify | Retail, entertainment, high-energy |
+| Clean Professional | Shopify, Wise | E-commerce, professional services |
+
+**Key files:**
+- `design-md-format.md` — The DESIGN.md format specification and blank template
+- `design-md-index.md` — Index of all references with selection guide
+
+Based on [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md). Files fetched via `npx getdesign@latest add [brand]`.
+
+---
+
 ## How to Install
 
 ### Option 1: Install All Skills
@@ -196,6 +233,10 @@ cp -r web-design-skills/04-theme-factory ~/.claude/skills/theme-factory
 cp -r web-design-skills/05-website-rebuild ~/.claude/skills/website-rebuild
 cp -r web-design-skills/06-local-business-rebuild ~/.claude/skills/local-business-rebuild
 cp -r web-design-skills/07-azerbaijan-website-build ~/.claude/skills/azerbaijan-website-build
+cp -r web-design-skills/08-design-system-generator ~/.claude/skills/design-system-generator
+
+# Copy the shared reference library (used by all build skills)
+cp -r web-design-skills/00-design-references ~/.claude/skills/00-design-references
 ```
 
 ### Option 2: Install Individual Skills
@@ -213,36 +254,38 @@ Read the SKILL.md files directly for design patterns, code snippets, and best pr
 ```
 frontend-design-anthropic (visual philosophy)
     |
+    +-- 00-design-references/ (DESIGN.md format spec + brand reference library)
+    |       |
+    |       +-- design-md-format.md (template + 9-section schema)
+    |       +-- design-md-index.md (10 brands indexed by aesthetic)
+    |       +-- references/by-aesthetic/ (Stripe, Apple, Airbnb, Nike, Linear, etc.)
+    |
+    +-- design-system-generator (produces DESIGN.md from business context)
+    |
     +-- responsive-design (layout patterns, sub-skill)
     |
     +-- web-design-guidelines (validation/review)
     |
-    +-- theme-factory (theming system)
+    +-- theme-factory (theming system + DESIGN.md extended themes)
     |
-    +-- website-rebuild (full 14-phase pipeline)
-    |       |
-    |       +-- references/design-rules.md
-    |       +-- references/accessibility-spec.md
-    |       +-- references/phase-details.md
-    |       +-- scripts/contrast-check.js
+    +-- website-rebuild (14-phase pipeline → produces DESIGN.md at Phase 5b)
     |
-    +-- local-business-rebuild (streamlined 10-phase)
-    |       |
-    |       +-- references/design-rules.md
-    |       +-- references/accessibility-spec.md
+    +-- local-business-rebuild (10-phase → produces DESIGN.md at Phase 4)
     |
-    +-- azerbaijan-website-build (tri-lingual pipeline)
-            |
-            +-- references/design-rules.md
-            +-- references/accessibility-spec.md
-            +-- references/i18n-spec.md
-            +-- references/azerbaijani-design-guide.md
-            +-- references/interview-questionnaire.md
-            +-- references/nano-banana-logo.md
-            +-- scripts/contrast-check.js
+    +-- azerbaijan-website-build (8-phase → produces DESIGN.md at Phase 2)
 ```
 
-The **frontend-design** skill is the foundation. The rebuild skills invoke it for all visual decisions. The **responsive-design** skill is a sub-skill pulled in during any build. The **web-design-guidelines** skill validates the output.
+**Flow:** During planning, rebuild skills invoke `frontend-design-anthropic` → read reference DESIGN.md files → produce a project-specific `DESIGN.md` via `design-system-generator`. During build, the DESIGN.md is the single source of truth for all visual implementation. During QA, `web-design-guidelines` validates the output.
+
+### DESIGN.md Integration
+
+All three build pipelines now produce a structured `DESIGN.md` during their planning phase:
+
+- **website-rebuild** → Phase 5b generates DESIGN.md after the Rebuild Plan
+- **local-business-rebuild** → Phase 4 generates DESIGN.md as part of the Design Commitment
+- **azerbaijan-website-build** → Phase 2 generates DESIGN.md (with Section 10: Multi-Lingual) after the Brand Card
+
+The DESIGN.md format captures the complete design system in 9 sections: Visual Theme, Color Palette, Typography, Component Stylings, Layout Principles, Depth/Elevation, Do's/Don'ts, Responsive Behavior, and Agent Prompt Guide. Based on the format from [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md).
 
 ---
 
@@ -280,50 +323,70 @@ Every skill in this system shares these principles:
 
 ```
 web-design-skills/
+  00-design-references/                     # Shared reference library (not a skill)
+    README.md                               # What this is, how to use it
+    design-md-format.md                     # DESIGN.md template + 9-section schema
+    design-md-index.md                      # Index of all references by aesthetic
+    references/
+      by-aesthetic/
+        luxury-minimal/
+          stripe.md                         # Stripe DESIGN.md
+          apple.md                          # Apple DESIGN.md
+        warm-editorial/
+          airbnb.md                         # Airbnb DESIGN.md
+          notion.md                         # Notion DESIGN.md
+        dark-premium/
+          linear.md                         # Linear DESIGN.md
+          vercel.md                         # Vercel DESIGN.md
+        bold-energetic/
+          nike.md                           # Nike DESIGN.md
+          spotify.md                        # Spotify DESIGN.md
+        clean-professional/
+          shopify.md                        # Shopify DESIGN.md
+          wise.md                           # Wise DESIGN.md
   01-frontend-design/
-    SKILL.md                          # Core visual design philosophy
+    SKILL.md                                # Core visual design philosophy
   02-responsive-design/
-    SKILL.md                          # Mobile-first patterns & breakpoints
+    SKILL.md                                # Mobile-first patterns & breakpoints
   03-web-design-guidelines/
-    SKILL.md                          # UI review against Vercel guidelines
+    SKILL.md                                # UI review against Vercel guidelines
   04-theme-factory/
-    SKILL.md                          # Theme application system
-    themes/
+    SKILL.md                                # Theme application system
+    themes/                                 # Simple themes (4 colors + 2 fonts)
       arctic-frost.md
       botanical-garden.md
-      desert-rose.md
-      forest-canopy.md
-      golden-hour.md
-      midnight-galaxy.md
-      modern-minimalist.md
-      ocean-depths.md
-      sunset-boulevard.md
-      tech-innovation.md
+      ...10 themes
+    design-md/                              # Extended themes (full DESIGN.md format)
+      arctic-frost.md
+      botanical-garden.md
+      ...10 themes
   05-website-rebuild/
-    SKILL.md                          # Full 14-phase rebuild agent
+    SKILL.md                                # Full 14-phase rebuild (+ Phase 5b DESIGN.md)
     references/
-      accessibility-spec.md           # WCAG AA specification
-      design-rules.md                 # Non-negotiable design rules
-      nano-banana.md                  # AI image enhancement
-      phase-details.md                # Detailed phase instructions
+      accessibility-spec.md
+      design-rules.md
+      nano-banana.md
+      phase-details.md
     scripts/
-      contrast-check.js               # WCAG contrast ratio checker
+      contrast-check.js
   06-local-business-rebuild/
-    SKILL.md                          # Streamlined 10-phase rebuild
+    SKILL.md                                # Streamlined 10-phase (+ Phase 4 DESIGN.md)
     references/
       accessibility-spec.md
       design-rules.md
   07-azerbaijan-website-build/
-    SKILL.md                          # Tri-lingual build pipeline
+    SKILL.md                                # Tri-lingual pipeline (+ Phase 2 DESIGN.md)
     references/
       accessibility-spec.md
-      azerbaijani-design-guide.md     # Cultural design considerations
+      azerbaijani-design-guide.md
       design-rules.md
-      i18n-spec.md                    # Complete i18n system
-      interview-questionnaire.md      # Business interview template
-      nano-banana-logo.md             # Logo generation via Gemini
+      i18n-spec.md
+      interview-questionnaire.md
+      nano-banana-logo.md
     scripts/
       contrast-check.js
+  08-design-system-generator/
+    SKILL.md                                # Produces DESIGN.md from business context
 ```
 
 ---
