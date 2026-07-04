@@ -34,104 +34,94 @@ Read from `~/prospect-pipeline/prospects/<slug>/`:
 - `original-site/content-inventory.json` — all scraped content
 - `original-site/assets/` — logo, images, etc.
 
-## Tech Stack — Exact. Do Not Deviate.
+## Standard Tech Stack — Static First
 
-**Framework:** Astro 5.x — static site generator, zero JavaScript by default, perfect for SEO.
-**Styling:** Tailwind CSS v4 (via Vite plugin)
-**Images:** Astro `<Image>` component from `astro:assets` (built-in optimization, WebP/AVIF)
-**SEO:** `@astrojs/sitemap` integration + manual JSON-LD
-**View Transitions:** Astro View Transitions (built-in, zero JS page transitions)
-**Package Manager:** npm (not pnpm, not yarn — npm only)
+This skill has a default stack. Use it unless the task gives a concrete reason not to.
 
-### Initialization — Run These Exact Commands
+### Our Standard
 
-```bash
-cd ~/prospect-pipeline/sites/
-npm create astro@latest <slug> -- --template minimal --no-install
-cd <slug>
-npm install
-npx astro add tailwind --yes
-npx astro add sitemap --yes
-npm install -D prettier
+```txt
+Static HTML/CSS/JS
+No framework
+No Tailwind
+No React
+No build step
+No package manager required
 ```
 
-That's it. The project is ready. Do not add React, do not add any other integrations unless the build specifically requires interactivity (rare for a local business site).
+This is the default for local-business previews, handwerker one-pagers, speculative redesigns, and public preview links.
 
-### If Something Fails During Build
+Why:
+- fastest to build and verify
+- easiest to deploy as a public preview
+- no `node_modules` tax
+- no framework lock-in
+- easiest to hand off, mirror, zip, host, or convert later
+- matches watchi's normal workflow: direct files, direct preview, direct deployment
 
-Fix the code. Do NOT:
-- Switch Node versions
-- Switch package managers
-- Reinstall the framework
-- Add React or any other UI framework
-- Change the project structure
+### Target Matrix
 
-If `npm create astro` fails, check that Node.js is available and try again. If it fails twice, report the error — do not try alternative frameworks.
+| Final use case | Default technical target |
+|---|---|
+| Quick visual preview / prospect pitch | Static HTML/CSS/JS |
+| Simple one-page local-business site | Static HTML/CSS/JS |
+| Multi-page static website with reusable sections | Astro or another static site generator, only if component reuse justifies it |
+| Config-driven template system | Astro/Next/static generator depending on the existing system |
+| Final site must be editable by the client | WordPress/ACF or Elementor workflow, **exception only** |
+| Existing WordPress site must be repaired/extended | Use the relevant WordPress skill, not this generic rebuild path |
 
-### Astro File Structure
+### Hard Rules
 
-```
-src/
-  layouts/
-    BaseLayout.astro     ← shared HTML shell, <head>, nav, footer
-  pages/
-    index.astro          ← homepage
-    about.astro          ← about page
-    services.astro       ← services page
-    contact.astro        ← contact page
-    404.astro            ← custom 404
-  components/
-    Header.astro         ← navigation
-    Footer.astro         ← footer
-    Hero.astro           ← hero section (reusable)
-    ...                  ← section components as needed
-  styles/
-    global.css           ← @import "tailwindcss"; + CSS custom properties
-public/
-  images/                ← all downloaded images go here
-  favicon.svg            ← favicon
-```
+- Do **not** add Astro, Tailwind, React, Next, animation libraries, or build tooling if plain HTML/CSS/JS is enough.
+- Do **not** default to WordPress or Elementor. Watchi uses WordPress/Elementor only for exceptions.
+- If the final platform is unknown, build a static preview first. Decide production implementation after visual approval.
+- If a framework is chosen, write the reason in `REBUILD_PLAN.md` under **Technical Target**.
+- If WordPress/Elementor is chosen, write why static output is insufficient and load the relevant WordPress workflow skill.
 
-### Astro Basics for This Build
+### Static HTML/CSS/JS Baseline
 
-`.astro` files have a frontmatter script fence (`---`) at the top and HTML-like template below:
+Recommended structure for the default path:
 
-```astro
----
-import { Image } from 'astro:assets';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import heroImage from '../assets/images/hero.jpg';
----
-
-<BaseLayout title="Home" description="Meta description here">
-  <section class="relative h-[80vh]">
-    <Image src={heroImage} alt="Descriptive alt text" class="object-cover w-full h-full" />
-  </section>
-</BaseLayout>
+```txt
+<slug>/
+  index.html
+  assets/
+    css/
+      style.css
+    js/
+      main.js
+    images/
+      ...
+  README.md
 ```
 
-Key differences from React/Next.js:
-- No JSX — it's HTML. Use `class=` not `className=`. Use `for=` not `htmlFor=`.
-- No `useState`, no `useEffect`, no client-side state. The page is static HTML.
-- Images: Import from `src/assets/images/` for optimization, or reference `public/images/` for unoptimized static files.
-- CSS custom properties go in `src/styles/global.css` and are available everywhere.
-- View Transitions: Add `<ViewTransitions />` to the `<head>` in BaseLayout for smooth page transitions — zero JavaScript.
+Rules:
+- Keep CSS custom properties at the top of `style.css`.
+- Keep JS minimal and purposeful: mobile nav, FAQ accordion, form mailto fallback, lightbox if needed.
+- Use local images only. No hotlinked Unsplash or source-site assets in production.
+- Use semantic HTML, JSON-LD, proper meta tags, and accessible forms exactly as in the framework path.
 
-### Google Fonts
+### Optional Astro Path
 
-Load via `<link>` tags in the BaseLayout `<head>`, or use `@fontsource` packages:
+Use Astro only when the project benefits from:
+- multiple pages with shared layouts
+- repeated section components
+- image optimization through a build step
+- sitemap generation through the deployment pipeline
+- an existing Astro/static-site project structure
 
-```bash
-npm install @fontsource-variable/playfair-display @fontsource/dm-sans
-```
+If Astro is used, keep the stack lean. Do not add React unless there is real interactive state that cannot be done with small vanilla JS.
 
-Then import in your layout's frontmatter:
-```astro
----
-import '@fontsource-variable/playfair-display';
-import '@fontsource/dm-sans';
----
-```
+### Font Loading
+
+For static HTML/CSS:
+- Prefer self-hosted font files when available.
+- Google Fonts `<link>` is acceptable for previews.
+- Avoid adding package-managed font dependencies unless a build system already exists.
+
+For framework builds:
+- Use the framework's existing font pattern, or `@fontsource` if already part of the project.
+
 
 ## Design Philosophy — MAKE IT UNFORGETTABLE
 
@@ -146,10 +136,10 @@ Before writing ANY code, you must describe in plain English:
 2. **For each homepage section** — describe: layout structure (NOT "3-column grid"), column ratios, visual devices (overlap? angle? texture? full-bleed?), and how it differs from the section above it.
 3. **The "wow" moment** — every great site has one thing that makes you stop scrolling. What is it for this site? (parallax hero? animated counter? overlapping testimonial cards? a diagonal section break?)
 
-Write this into `REBUILD_PLAN.md` before touching any `.astro` file.
+Write this into `REBUILD_PLAN.md` before touching any implementation file (`index.html`, CSS, JS, Astro, or otherwise).
 
 ### Typography
-- Beautiful, unique fonts from Google Fonts or @fontsource
+- Beautiful, unique fonts from Google Fonts links or self-hosted font files. Use `@fontsource` only when a framework/build system was explicitly selected.
 - **BANNED:** Inter, Roboto, Arial, Helvetica, system fonts, Space Grotesk, Lato, Open Sans, Source Sans Pro
 - **INSTEAD:** Distinctive display font + refined body font. Fraunces, Playfair Display, Clash Display, Cabinet Grotesk, General Sans, Satoshi, Plus Jakarta Sans.
 - Use the FULL typographic range: hero headings should be 56-80px at minimum, clamp()'d fluidly, but capped at a **96px ceiling** — after writing the clamp(), compute its maximum value in px and confirm it does not exceed 96px. A shipped build hit 118px with no ceiling check catching it; past 96px the page is shouting, not designing. Extreme weight contrast (300 vs 800, not 400 vs 600)
@@ -168,9 +158,9 @@ Write this into `REBUILD_PLAN.md` before touching any `.astro` file.
 - **BANNED:** bounce/elastic easing, `transition: all`, animating width/height/margins (layout thrashing), identical fadeInUp on every section
 - **INSTEAD:** Exponential easing (`cubic-bezier(0.16, 1, 0.3, 1)` for ease-out-expo). Staggered reveals with `animation-delay`. One orchestrated page-load sequence. `transform` and `opacity` only (60fps).
 - **MINIMUM 3 distinct animation types per site** — don't just use fadeInUp everywhere. Examples: slide-in-from-left, scale-reveal, clip-path-wipe, counter-count-up, text-split-reveal, parallax-subtle
-- Scroll-triggered reveals required on at least 2 sections (use Intersection Observer with a small `<script>` tag in Astro)
+- Scroll-triggered reveals required on at least 2 sections (use Intersection Observer in `assets/js/main.js` for the static standard)
 - Respect `prefers-reduced-motion` with `@media` query
-- Astro View Transitions for page-to-page animation
+- Page transitions are optional. Do not add framework-specific transition systems unless the chosen target already supports them.
 
 ### Layout — BREAK THE GRID
 - **BANNED:** Every section centered with `max-w-7xl mx-auto`. Identical 3-column card grids. Every section header as `text-center max-w-2xl mx-auto mb-14`. Uniform padding on every section. Everything wrapped in rounded cards with drop shadows.
@@ -210,10 +200,11 @@ Write this into `REBUILD_PLAN.md` before touching any `.astro` file.
   - Subtle background patterns (dots, lines, topographic maps for outdoor businesses)
   - Layered z-index compositions where elements overlap intentionally
 
-### Component Architecture
-- **MANDATORY:** Each visually distinct homepage section must be its own `.astro` component in `src/components/`. This forces you to design each section independently rather than copy-pasting patterns.
-- Minimum components for a homepage: `Hero.astro`, `About.astro`, `Services.astro`, `Testimonials.astro`, `CTA.astro` — plus the global Header/Footer.
-- This is not optional. A 250-line monolithic `index.astro` is a design failure.
+### Section Architecture
+- **MANDATORY:** Each visually distinct homepage section must be designed as its own conceptual component, even in static HTML.
+- In the static standard, separate sections clearly with semantic HTML, comments, and dedicated CSS blocks: Hero, Trust, Services, About, Process, Projects, Testimonials, FAQ, CTA, Footer.
+- Do not copy-paste one card/grid pattern across the whole page. Each section needs its own layout logic.
+- If a framework target is explicitly chosen, map these same conceptual sections to real components in that framework.
 
 ## Optional Intensity Pass — Bolder / Overdrive
 
@@ -262,14 +253,14 @@ Synthesize everything into a concrete plan:
 8. **IMAGE DOWNLOAD** — Follow the Image Selection Protocol below, then download ALL images before writing any component code.
 
    ```bash
-   mkdir -p ~/prospect-pipeline/sites/<slug>/public/images
+   mkdir -p ~/prospect-pipeline/sites/<slug>/assets/images
    # Download each planned image:
-   curl -sL -o ~/prospect-pipeline/sites/<slug>/public/images/hero.jpg "https://images.unsplash.com/photo-XXXXX?auto=format&fit=crop&w=2400&q=85"
+   curl -sL -o ~/prospect-pipeline/sites/<slug>/assets/images/hero.jpg "https://images.unsplash.com/photo-XXXXX?auto=format&fit=crop&w=2400&q=85"
    ```
 
    Verify images exist before proceeding:
    ```bash
-   ls -la ~/prospect-pipeline/sites/<slug>/public/images/
+   ls -la ~/prospect-pipeline/sites/<slug>/assets/images/
    ```
    The directory must contain at minimum: hero image, about section image, at least one services image. If it doesn't, download them now.
 
@@ -280,38 +271,62 @@ Synthesize everything into a concrete plan:
 3. Generate `DESIGN.md` with all 9 sections. The plain English design commitment becomes Section 1 (Visual Theme) and Section 7 (Do's and Don'ts).
 4. REBUILD_PLAN.md Design Direction section should say "See DESIGN.md for the complete design system."
 
+**Optional Shape Probes (when no clear direction from user):**
+If the user has not given a specific aesthetic direction (no mood, no reference site, no "make it dark"), build 3 lightweight HTML probes before committing to DESIGN.md. Each probe is a single viewport (1440×900) showing one structural direction with real business photos:
+
+- **Probe A:** Warm/local — editorial, generous whitespace, Playfair-style serif
+- **Probe B:** Premium/minimal — dark, sparse, large type, magazine feel
+- **Probe C:** Conversion-first — split layouts, prominent phone CTA, dense proof
+
+Use the existing scraped photos, not stock. Each probe needs: headline + subline + 2 images + CTA. Present all three to the user and wait for explicit confirmation before building DESIGN.md.
+
+**Why this matters:** Building without a confirmed direction produces template-like results — identical grids recolored. The probe phase prevents "Das ist nur ein Grundentwurf" rejections. See `references/canvas-direction-probes.md` from `impeccable` for the HTML pattern.
+
 **Output:** `DESIGN.md` in the project root (alongside REBUILD_PLAN.md)
 
 **Output:** `~/prospect-pipeline/prospects/<slug>/REBUILD_PLAN.md`
 
 ### Phase 5: Build the Website
 
-**Read the project's `DESIGN.md` before writing any code.** Translate Section 2 into CSS custom properties, Section 3 into font imports and typographic scale, Section 4 into component implementations, and Section 6 into shadow tokens. The DESIGN.md is the source of truth for all visual implementation.
+**Read the project's `DESIGN.md` before writing any code.** Translate Section 2 into CSS custom properties, Section 3 into font loading and typographic scale, Section 4 into reusable HTML/CSS component patterns, and Section 6 into shadow tokens. The DESIGN.md is the source of truth for all visual implementation.
 
-Before writing code, confirm images are downloaded: `ls ~/prospect-pipeline/sites/<slug>/public/images/`. If empty, go back to Phase 4 step 8.
+Before writing code, confirm images are downloaded in the selected static asset directory (`assets/images/` for the standard path). If images are missing, go back to Phase 4 step 8.
 
-Build in `~/prospect-pipeline/sites/<slug>/`:
+Build in `~/prospect-pipeline/sites/<slug>/` using the standard static stack unless a different target was explicitly justified in `REBUILD_PLAN.md`:
 
-1. **Initialize the Astro project** using the exact commands from the Tech Stack section above.
+1. **Create the static project structure:**
+   ```txt
+   <slug>/
+     index.html
+     assets/
+       css/style.css
+       js/main.js
+       images/
+     README.md
+   ```
 
-2. **Set up the design system:**
-   - Create `src/styles/global.css` with CSS custom properties for all brand colors, typography, and spacing
-   - Add WCAG contrast ratios as comments next to each color pairing
-   - Import fonts via @fontsource packages or `<link>` tags
+2. **Set up the design system in CSS:**
+   - Create `assets/css/style.css`
+   - Put all CSS custom properties at the top: colors, type scale, spacing, radius, shadows
+   - Add WCAG contrast ratios as comments next to critical color pairings
+   - Load fonts via `<link>` in `index.html` for previews, or self-host font files when available
+   - Do not use Tailwind unless the existing project already uses it and the user wants to keep it
 
-3. **Build the BaseLayout** (`src/layouts/BaseLayout.astro`):
-   - `<html>`, `<head>` with meta tags, OG tags, fonts, global CSS
-   - `<ViewTransitions />` for smooth page transitions
-   - Shared Header/Nav and Footer components
+3. **Build the HTML shell (`index.html`):**
+   - Semantic `<html>`, `<head>`, `<main>`, `<section>`, `<footer>` structure
+   - Unique `<title>` and `<meta name="description">`
+   - Open Graph tags
+   - JSON-LD structured data
    - Skip-to-content link as first focusable element
-   - JSON-LD structured data slot
+   - Header/nav, main content, footer
+   - Local stylesheet and script references only
 
-4. **Build every page** per the architecture in REBUILD_PLAN.md:
-   - Each page is a `.astro` file in `src/pages/`
-   - Include a polished 404.astro
-   - Make each page dramatically better than what the business currently has
+4. **Build the homepage as real sections:**
+   - Make the page dramatically better than what the business currently has
    - Every hero section must use a real photograph, not CSS gradients
-   - Use Astro `<Image>` component for optimized images where possible
+   - Use local image paths like `assets/images/hero.jpg`
+   - Keep each visually distinct homepage section separated with clear comments in HTML/CSS
+   - If the page grows large, split repeated or complex behavior into small JS functions in `assets/js/main.js`
 
    **CRITICAL — TEXT CONTRAST OVER IMAGES (this fails QA constantly):**
    When placing text over a hero image or any photograph:
@@ -341,28 +356,53 @@ Build in `~/prospect-pipeline/sites/<slug>/`:
    - Compose the `mailto:` link yourself in a small submit handler (subject + body built from the field values) and set `window.location.href` to it
    - Always show a visible status message after submit confirming what should happen next
    - Always include a manual fallback: a direct `mailto:` link with the same prefilled subject/body, plus a copy-to-clipboard option
+   - Mirror the original site's contact facts when the user asks to "übernehmen": phone, email, street address, postal code/city, opening hours, form fields, service checkboxes, timing/area dropdowns. Do not silently keep stale contact facts from a draft.
+   - Add a real WhatsApp CTA for German local-service sites when requested or when the original site already uses one: `https://wa.me/<countrycode-number>?text=<encoded message>`. Use the same verified phone number as the `tel:` link.
    - Never ship a contact form whose only feedback mechanism is "hope the browser handles it"
 
-5. **Images — every site MUST have at minimum:**
+   See `references/local-business-contact-and-case-study-cta.md` for a compact static-site pattern covering source-parity contact sections, WhatsApp links, and animated case-study CTAs.
+
+5. **Conversion Patterns — Apply at least 3 of 5:**
+   The site must convert, not just look good. Read `references/conversion-patterns.md` for copy-paste code. Before shipping, verify at least 3 of these patterns are present:
+   - **Trust Bar** with verified data metrics (years, projects, rating, response time) — immediately after hero
+   - **Floating CTA** on mobile — `tel:` link, fixed bottom-right, 60×60px, hidden on desktop
+   - **FAQ Accordion** — ≤7 real questions, answers ≤3 sentences, catches objections before contact
+   - **Lead Magnet** — email capture with specific offer (checklist, guide), only if a real backend exists (Resend, Make, Zapier, n8n)
+   - **JSON-LD with `aggregateRating`** — real Google review stars in search results, with `areaServed` for local SEO
+
+   Do NOT invent metrics. Do NOT build a lead magnet without a backend. Fake trust destroys more than no trust at all. See `references/conversion-patterns.md`.
+
+6. **Thin Page Trap — ELIMINATE before QA:**
+   A service-business page with only a hero and a few cards is NOT enough. The visitor needs substance to trust and act. Minimum content structure:
+   1. **Problem** — What pain does the visitor have?
+   2. **Mechanism** — How do you solve it? (process, materials, guarantee)
+   3. **Proof** — Why believe you? (projects, reviews, certifications)
+   4. **Process** — What happens after contact? (reduces fear)
+   5. **Objections** — FAQ answers "too expensive", "too slow", "not my area"
+   6. **Examples** — Real projects with real photos
+   7. **Final CTA** — One last chance to act
+
+   **Check:** Does the homepage scroll for at least **2 full desktop viewports**? If not, it's too thin. Add content before QA. See `references/copy-discipline.md` for the thin page trap details.
+
+7. **Images — every site MUST have at minimum:**
    - A hero image (full-width, atmospheric, sets the mood)
    - An about/story section image (business, workspace, or team)
    - Team photos (actual photos from their site)
    - At least 1 image per major content section
-   - Reference by path: `/images/filename.jpg` for public/ files, or import from `src/assets/` for optimized
+   - Reference by path: `assets/images/filename.jpg` for the static standard, or use the chosen framework's asset path if a framework target was explicitly selected
    - **A site with no images or only CSS gradients is UNACCEPTABLE and will not pass QA.**
 
-6. **Comprehensive SEO:**
-   - Unique `<title>` and `<meta name="description">` per page
+8. **Comprehensive SEO:**
+   - Unique `<title>` and `<meta name="description">`
    - Open Graph and Twitter Card meta tags
-   - JSON-LD schema (LocalBusiness type) with NAP data
-   - Sitemap via @astrojs/sitemap (already installed)
-   - `public/robots.txt`
-   - Canonical URLs
+   - JSON-LD schema (LocalBusiness type) with NAP data, `areaServed`, and real `aggregateRating` if verified reviews exist
+   - `robots.txt` when the preview is intended for indexing; `noindex` when it is only a private/prospect preview
+   - Canonical URL if a final public URL exists
    - Semantic HTML throughout (proper heading hierarchy, landmarks, etc.)
 
-7. **Generate favicon** — complete set from logo (at minimum: favicon.svg in public/)
+9. **Generate favicon** — complete set from logo (at minimum: `favicon.svg` or `favicon.png` in project root/assets)
 
-8. **Accessibility:**
+10. **Accessibility:**
    - WCAG AA contrast on all text/background combinations
    - **ESPECIALLY check text-over-image contrast** — every hero, banner, and CTA section with a background photo MUST have an overlay (dark overlay for light text, light overlay for dark text). This is the #1 accessibility failure in builds.
    - Full keyboard navigation with visible focus indicators
@@ -370,11 +410,13 @@ Build in `~/prospect-pipeline/sites/<slug>/`:
    - `prefers-reduced-motion` media query wrapping all animations
    - Skip-to-main-content link
 
-9. **Performance** — Astro handles most of this automatically:
-   - Static HTML output (zero JS by default)
-   - Optimized images via `<Image>` component
-   - Optimized fonts via @fontsource (self-hosted, no external requests)
-   - Target: Lighthouse 95+ (Astro sites achieve this easily)
+11. **Performance — static-first:**
+   - No build step required for the standard path
+   - Keep JavaScript small and purposeful
+   - Optimize images manually: correct dimensions, WebP/AVIF when useful, no huge originals in hero
+   - Use `loading="lazy"` for below-the-fold images and explicit `width`/`height` or `aspect-ratio` to prevent layout shift
+   - Self-host critical assets when possible
+   - Target: Lighthouse 95+
 
 ### Image Selection Protocol
 
@@ -403,6 +445,7 @@ For every image slot, read the surrounding copy FIRST. The image must reinforce 
 - "Precision and attention to detail" → close-up work that demonstrates craft
 - Customer service section → people interacting, not just equipment
 - Testimonial → evoke the feeling the testimonial describes
+- Contact section → use a welcoming, trust-building finished-room/work-quality image. Avoid toilets/WCs, demolition mess, exposed plumbing, or any image that makes the visitor think about unpleasant work at the exact moment they are deciding whether to call.
 
 DO NOT just search Unsplash for the business category and grab the first result.
 
@@ -457,6 +500,15 @@ Read through every word on the rebuilt site:
 - 8th-grade reading level, short sentences for impact
 - Testimonials placed near CTAs and decision points
 - Hook → Problem → Solution → Proof → Action flow
+- **Reviews/testimonials are evidence, not decoration:** before writing generic testimonial copy, inspect the original site and public Google/Maps links for real reviews. If real Google reviews are visible, use the exact visible reviewer names, star ratings, review texts, aggregate rating, review count, and source link. Do not invent, paraphrase as if quoted, or silently downgrade them to vague “Kundenstimme” cards.
+
+**Copy Discipline — Apply these rules (see `references/copy-discipline.md` for full details):**
+- **No em dashes (`—`).** Use commas, colons, semicolons, periods instead.
+- **No restated headings.** If a paragraph restates the heading, delete the paragraph.
+- **No generic openers.** Ban: "Willkommen auf unserer Website", "Qualität steht bei uns an erster Stelle", "Kundenzufriedenheit ist unser oberstes Ziel", "Zögern Sie nicht, uns zu kontaktieren".
+- **Active voice, specific numbers, local anchoring.** „247 Projekte in Düsseldorf seit 2020" beats „Viele zufriedene Kunden".
+- **CTA copy must be direct.** "Jetzt anrufen: 0152 34 34 6248" beats "Kontaktieren Sie uns".
+- **Read every heading out loud.** If it could be on any competitor's site, rewrite it.
 
 Wordsmith every paragraph. This is a sales tool.
 
@@ -466,25 +518,55 @@ Wordsmith every paragraph. This is a sales tool.
 Single comprehensive pass covering functional, copy, and visual:
 
 1. Run the site locally with `preview_start`
-2. Open every page and take screenshots with `preview_screenshot`
+2. **Screenshot protocol — Capture ALL viewports:**
+   - First viewport (hero) at 1440px — must show H1, subline, CTA without scrolling
+   - Full page at 1440px — every section visible, footer visible
+   - Mobile at 375px — text readable, tap targets visible, floating CTA if applicable
+   - Tablet at 768px — layout intact, nav accessible
+   Verify each output file exists and is > 0 bytes. See `references/screenshot-verification.md` for the full protocol.
 3. **Images check (do this first):**
    - Count images on homepage: `document.querySelectorAll('img').length`
    - If fewer than 3 images, go back to Phase 5 and add images before continuing.
    - Verify: hero has a real photograph, about section has a real photograph, services has images.
    - If any are missing, download appropriate images and add them.
-4. **Functional:** Check every link, image, form, interactive element at mobile + desktop
-5. **Copy:** Read as a first-time customer. Understand in 5 seconds? Trust? Know what to do?
-6. **Visual:** Animations smooth? Typography beautiful? Whitespace balanced? Colors cohesive? Photos beautiful and relevant?
-7. **Accessibility:** Verify contrast ratios on all color pairings. Keyboard nav works. Focus indicators visible.
-8. **Design system consistency:** Verify that every CSS custom property in `global.css` maps to a token defined in DESIGN.md. No orphan tokens, no missing tokens.
-9. Compare to best in industry — it should be BETTER.
-10. **Harden pass (edge cases the happy path misses):**
+4. **Hero Clarity Check:**
+   - Is the photo visible (not buried under overlay)? Overlay must not be darker than `rgba(0,0,0,0.5)` for light text.
+   - Is text readable without squinting? White text on bright sky = fail.
+   - Is CTA obvious within 3 seconds?
+   - Does text overlap the busiest part of the photo?
+   If any answer is no, fix before continuing. See `references/screenshot-verification.md`.
+5. **Functional:** Check every link, image, form, interactive element at mobile + desktop
+6. **Copy:** Read as a first-time customer. Understand in 5 seconds? Trust? Know what to do?
+7. **Visual:** Animations smooth? Typography beautiful? Whitespace balanced? Colors cohesive? Photos beautiful and relevant?
+8. **Accessibility:** Verify contrast ratios on all color pairings. Keyboard nav works. Focus indicators visible.
+9. **Design system consistency:** Verify that every CSS custom property in `global.css` maps to a token defined in DESIGN.md. No orphan tokens, no missing tokens.
+   - **Subpage/project-page consistency:** When a homepage redesign includes project pages, galleries, case studies, or other secondary pages, inspect those pages as first-class deliverables. They must inherit the homepage's typography, accent colors, button shapes, header/logo treatment, light/dark section rhythm, and footer style. Do not leave older prototype styling (different fonts like Bebas/Barlow, different accent colors like bright orange, square buttons, or foreign section backgrounds) on a subpage just because the homepage is polished.
+   - **Case-study discovery paths:** Project/case-study pages only help conversion if visitors find them. Make every important project path obvious from the hero, the projects section, and the footer. Prefer a tasteful animated CTA (subtle float, sheen, arrow nudge; transform/opacity only, reduced-motion safe) plus a clickable project card over a quiet text link. Keep it premium, not carnival.
+   - Mechanical check for static subpages: search the subpage source for obsolete fonts and colors from the previous design, verify computed `body`/heading font families and CTA accent color in the browser, then test galleries/lightboxes/filters after restyling.
+10. Compare to best in industry — it should be BETTER.
+11. **Harden pass (edge cases the happy path misses):**
     - Long business/owner names don't break the header or nav
     - Long address / opening-hours strings don't overflow their container
     - Empty or partially-filled form states look intentional, not broken
     - Every CTA has a real destination — no dead links left over from placeholder content
     - Re-check mobile viewport *after* any Bolder/Overdrive pass, not just after the initial build — effects that work at desktop width often break or lag on mobile
-11. **Mechanical self-checks (don't rely on memory of the rules above while deep in implementation):**
+12. **Mobile-First pass — MANDATORY:**
+    - Touch targets ≥ 44px (preferably 48px) for all interactive elements
+    - Body text minimum 16px everywhere (prevents iOS auto-zoom)
+    - Phone number visible in first viewport without scrolling
+    - Floating CTA visible on mobile (if pattern is used)
+    - No horizontal scroll at 375px
+    - Can the primary goal (call / form / WhatsApp) be completed with one hand?
+    - Hamburger menu opens, closes, links work
+    Actually scroll the mobile viewport, not just load at scroll position 0. See `references/mobile-first-checklist.md`.
+13. **Conversion-Patterns Check:**
+    - Trust Bar present with verified data? If not, is there a good reason?
+    - Floating CTA on mobile? If not, is phone prominently reachable?
+    - FAQ Accordion present? Does it answer real objections?
+    - Lead magnet only if backend exists — otherwise skip and note why.
+    - JSON-LD with `aggregateRating` (if real reviews) + `areaServed`
+    At least 3 of 5 patterns must be present. If fewer, add them or document why not.
+14. **Mechanical self-checks (don't rely on memory of the rules above while deep in implementation):**
     - Count `@keyframes` blocks plus distinct IntersectionObserver-driven reveal patterns in the shipped code. Fewer than 3 distinct techniques means the "MINIMUM 3 distinct animation types" rule wasn't actually met — go back and add more.
     - Compute every heading `clamp()`'s maximum value in px. Any hero/section heading exceeding 96px → reduce the clamp max or rewrite the copy.
     - Grep the stylesheet for every variant class referenced in template logic (`wide`, `tall`, `featured`, etc.) — a class with no matching rule means the intended layout variety isn't actually rendering.
@@ -499,7 +581,7 @@ Before deploying, verify ALL images load:
    Array.from(document.querySelectorAll('img')).filter(img => !img.complete || img.naturalWidth === 0).map(img => img.src)
    ```
 4. If ANY broken images:
-   - External URL → download locally to `public/images/` and update src
+   - External URL → download locally to `assets/images/` and update src
    - Wrong path → fix the path
    - Corrupted → re-download
 5. **NEVER hotlink images from the prospect's original website.** Always use local files.
@@ -519,13 +601,14 @@ Verify every item:
 
 ### Phase 9: Prepare for Deployment
 The site is built in `~/prospect-pipeline/sites/<slug>/`. Prepare it:
-- Verify `.gitignore` is appropriate (Astro generates one during init)
-- Create a `README.md` with project overview and how to run locally
+- Verify the static asset paths are relative and portable (`assets/...`, not local machine paths)
+- Create a `README.md` with project overview and how to run locally (`python3 -m http.server`, PHP server, or chosen preview command)
+- If the site is static, no package install/build should be required unless explicitly justified
 - Mark the prospect `status` as `"built"` in `info.json`
 - Add `built_date` to `info.json`
 - Update `pipeline.json`: increment `total_built`
 
-Note: Actual deployment to GitHub/Vercel is handled by the `/prospect-deploy` skill.
+Note: Actual deployment to GitHub/Vercel/static hosting is handled separately. The standard output is a portable static folder.
 
 ### Phase 10: Summary
 Output what was built:
@@ -536,7 +619,7 @@ Business:      Bob's Plumbing
 Location:      Coeur d'Alene, Idaho
 Category:      Plumber
 Site Path:     ~/prospect-pipeline/sites/bobs-plumbing/
-Framework:     Astro 5.x + Tailwind CSS v4
+Framework:     Static HTML/CSS/JS (standard)
 Pages Built:   7 (Home, About, Services, Gallery, Contact, FAQ, 404)
 Design:        [brief description of aesthetic]
 Key Features:  [list notable features]
@@ -551,6 +634,20 @@ Ready for:     /prospect-deploy
 This skill inherits the design philosophy from the main website-rebuild skill:
 - [design-rules.md](references/design-rules.md) — Non-negotiable design rules
 - [accessibility-spec.md](references/accessibility-spec.md) — WCAG AA specification
+
+Hermes/WebsiteUpgrade adaptations that must be checked before a non-standard run:
+- [hermes-direct-url-workdir-adaptation.md](references/hermes-direct-url-workdir-adaptation.md) — use when the user gives a live URL plus explicit workdir instead of the prospect-pipeline layout.
+- [direct-url-github-deploy-lessons.md](references/direct-url-github-deploy-lessons.md) — safe direct URL → local rebuild → GitHub/Vercel pattern; avoid committing raw mirrored builder HTML.
+- [local-business-contact-and-case-study-cta.md](references/local-business-contact-and-case-study-cta.md) — static contact-section parity, WhatsApp CTA, mailto form handler, and project/case-study discovery CTA pattern.
+- [hero-file-in-full-redesign.md](references/hero-file-in-full-redesign.md) — supplied hero/prototype is the opening section, not the whole site.
+- [hero-animation-redesign-integration.md](references/hero-animation-redesign-integration.md) — preserve hero animation mechanics, but restyle logo, typography, colors, copy, CTAs, overlay, and photo grading to match the final site.
+- [typography-local-business.md](references/typography-local-business.md) — local craft/trades typography corrections when a design feels generic or like AI slop.
+
+New reference files (added 2026-07-04):
+- [conversion-patterns.md](references/conversion-patterns.md) — 5 conversion patterns with copy-paste code: Trust Bar, Floating CTA, FAQ Accordion, Lead Magnet, JSON-LD with reviews
+- [mobile-first-checklist.md](references/mobile-first-checklist.md) — touch targets, typography, navigation, form, and performance checks for mobile-first builds
+- [copy-discipline.md](references/copy-discipline.md) — banned patterns (em dashes, generic openers), thin page trap, writing rules, CTA copy
+- [screenshot-verification.md](references/screenshot-verification.md) — capture protocol, hero clarity check, viewport verification, production URL check
 
 ## Key Differences from Full Website Rebuild
 
