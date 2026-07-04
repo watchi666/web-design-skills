@@ -16,6 +16,8 @@ description: >
 
 Build a world-class website for a local business prospect using their scraped content and branding. This is the core value delivery — the rebuilt site must be so dramatically better than their current one that the business owner immediately sees the value.
 
+**Register:** This skill always targets **Brand register** (design IS the product — distinctiveness is the bar), never Product register (app UI/dashboards, where earned familiarity matters more than standing out). If a prospect request secretly asks for an internal tool instead of a marketing site, flag it — this skill's rules don't apply there.
+
 ## How This Skill Works
 
 This is an adapted version of the full `/website-rebuild` skill, streamlined for speculative local business pitches:
@@ -188,6 +190,12 @@ Write this into `REBUILD_PLAN.md` before touching any `.astro` file.
 
 - **RULE:** No two consecutive sections may share the same column structure or visual pattern.
 
+### Additional Generic-Tell Rules (do not duplicate the rules above — these close specific gaps)
+- **BANNED:** the rounded-square icon tile sitting above every heading — the single most common generic-AI tell, more diagnostic than any individual color or font choice
+- **BANNED:** cards nested inside cards
+- **BANNED:** a decorative two-axis CSS grid overlay (hairline gradient lines in a repeating background) used as generic filler on a surface that isn't an actual canvas, map, blueprint, or measurement tool. This is different from the intentional background patterns already allowed above (dots, topographic lines, etc.) — the test is whether the pattern is doing real work for this specific business or just filling empty space because nothing else was designed.
+- **BANNED:** gray body text sitting directly on a saturated/colored section background (distinct from the text-over-image contrast rule above — this applies to solid color fills, not photographs). Tint the text toward the section's own palette instead.
+
 ### Visual Depth & Atmosphere
 - **BANNED:** Flat solid-color section backgrounds with nothing else. Plain white sections. Sections that are just text floating in space.
 - **INSTEAD:** Add visual depth with AT LEAST 2 of these per site:
@@ -202,6 +210,15 @@ Write this into `REBUILD_PLAN.md` before touching any `.astro` file.
 - **MANDATORY:** Each visually distinct homepage section must be its own `.astro` component in `src/components/`. This forces you to design each section independently rather than copy-pasting patterns.
 - Minimum components for a homepage: `Hero.astro`, `About.astro`, `Services.astro`, `Testimonials.astro`, `CTA.astro` — plus the global Header/Footer.
 - This is not optional. A 250-line monolithic `index.astro` is a design failure.
+
+## Optional Intensity Pass — Bolder / Overdrive
+
+Run this between Phase 5 (Build) and Phase 7 (QA) only when the brief explicitly asks for something beyond the standard bar above (e.g. "atemberaubend", "blow people away", "unlike anything else in the industry"). Two distinct modes — pick based on what's actually missing:
+
+- **Bolder:** the design system in DESIGN.md is right but was executed timidly. Push harder on hierarchy, proportion, density, and copy tone using the *existing* palette/typography/components — don't introduce new colors or effects, just commit harder to what's already chosen.
+- **Overdrive:** the brief wants technically ambitious effects the current design system doesn't have room for (WebGL/shader accents, cursor-reactive elements, elaborate scroll choreography beyond the "MINIMUM 3 distinct animation types" rule above). If DESIGN.md genuinely can't express the direction being asked for, say so and name the exact additions before building them — don't silently bolt effects onto a system that wasn't built for them.
+
+Either mode: Lighthouse 95+ and WCAG AA from the rules above are not negotiable trade-offs for boldness. An effect that tanks performance or breaks contrast failed this pass regardless of how impressive it looks in isolation.
 
 ## The 10 Phases
 
@@ -448,6 +465,12 @@ Single comprehensive pass covering functional, copy, and visual:
 7. **Accessibility:** Verify contrast ratios on all color pairings. Keyboard nav works. Focus indicators visible.
 8. **Design system consistency:** Verify that every CSS custom property in `global.css` maps to a token defined in DESIGN.md. No orphan tokens, no missing tokens.
 9. Compare to best in industry — it should be BETTER.
+10. **Harden pass (edge cases the happy path misses):**
+    - Long business/owner names don't break the header or nav
+    - Long address / opening-hours strings don't overflow their container
+    - Empty or partially-filled form states look intentional, not broken
+    - Every CTA has a real destination — no dead links left over from placeholder content
+    - Re-check mobile viewport *after* any Bolder/Overdrive pass, not just after the initial build — effects that work at desktop width often break or lag on mobile
 
 ### Broken Image Check
 Before deploying, verify ALL images load:
@@ -524,3 +547,7 @@ This skill inherits the design philosophy from the main website-rebuild skill:
 | Deploy | Individual GitHub repo + Vercel | Monorepo path only (deploy is separate skill) |
 | Input | URL provided by user | Scraped content from prospect-scrape |
 | Output | Live deployed site | Built site in monorepo, ready for deploy |
+
+## Credit
+
+The Register check, the additional generic-tell rules (icon-tile, nested cards, decorative grid overlay, gray-on-color), and the optional Bolder/Overdrive intensity pass were adapted from the design-quality concepts in [`pbakaus/impeccable`](https://github.com/pbakaus/impeccable).
