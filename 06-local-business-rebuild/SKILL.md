@@ -152,7 +152,7 @@ Write this into `REBUILD_PLAN.md` before touching any `.astro` file.
 - Beautiful, unique fonts from Google Fonts or @fontsource
 - **BANNED:** Inter, Roboto, Arial, Helvetica, system fonts, Space Grotesk, Lato, Open Sans, Source Sans Pro
 - **INSTEAD:** Distinctive display font + refined body font. Fraunces, Playfair Display, Clash Display, Cabinet Grotesk, General Sans, Satoshi, Plus Jakarta Sans.
-- Use the FULL typographic range: hero headings should be 56-80px+ (clamp for fluid), extreme weight contrast (300 vs 800, not 400 vs 600)
+- Use the FULL typographic range: hero headings should be 56-80px at minimum, clamp()'d fluidly, but capped at a **96px ceiling** — after writing the clamp(), compute its maximum value in px and confirm it does not exceed 96px. A shipped build hit 118px with no ceiling check catching it; past 96px the page is shouting, not designing. Extreme weight contrast (300 vs 800, not 400 vs 600)
 - Body minimum 16px, line-height 1.5-1.65
 - `text-wrap: balance` on headings, `font-variant-numeric: tabular-nums` on numbers
 
@@ -189,12 +189,16 @@ Write this into `REBUILD_PLAN.md` before touching any `.astro` file.
   **Pattern F — Pull Quote / Callout:** A testimonial or stat that breaks out of the text flow — oversized text, a different background, rotated slightly, or overlapping adjacent content.
 
 - **RULE:** No two consecutive sections may share the same column structure or visual pattern.
+- **VERIFY:** if template logic computes a variant class name (e.g. a `wide`/`tall`/`featured` modifier based on index, as in Pattern D), grep the stylesheet before considering the section done to confirm a matching CSS rule actually exists. A shipped build had exactly this gap — the markup computed the variant classes correctly, nothing in `global.css` styled them, and the grid rendered completely uniform despite looking varied in the source.
 
 ### Additional Generic-Tell Rules (do not duplicate the rules above — these close specific gaps)
 - **BANNED:** the rounded-square icon tile sitting above every heading — the single most common generic-AI tell, more diagnostic than any individual color or font choice
 - **BANNED:** cards nested inside cards
 - **BANNED:** a decorative two-axis CSS grid overlay (hairline gradient lines in a repeating background) used as generic filler on a surface that isn't an actual canvas, map, blueprint, or measurement tool. This is different from the intentional background patterns already allowed above (dots, topographic lines, etc.) — the test is whether the pattern is doing real work for this specific business or just filling empty space because nothing else was designed.
 - **BANNED:** gray body text sitting directly on a saturated/colored section background (distinct from the text-over-image contrast rule above — this applies to solid color fills, not photographs). Tint the text toward the section's own palette instead.
+- **BANNED:** a small uppercase tracked label ("eyebrow"/kicker) placed above the heading of every section. One deliberate label used once as a genuine brand device is voice; the same treatment repeated on a third, fourth, fifth section is the tell — verified in a real shipped build where this pattern reached 11 of 11 sections despite the rules above already being in place. If you catch yourself adding the same label pattern a third time, stop and vary the section's hierarchy some other way instead.
+- **BANNED:** a colored `border-left`/`border-right` stripe as a card or list-item accent, including on numbered process steps. Give a numeral visual weight through large/distinctive typography instead of a side border.
+- **BANNED:** sequential numbering (01/02/03…) applied to a list that has no real order — a services list, a feature grid. Numbers earn their place only on a genuine sequence (an actual multi-step process, a timeline) where the order itself carries information.
 
 ### Visual Depth & Atmosphere
 - **BANNED:** Flat solid-color section backgrounds with nothing else. Plain white sections. Sections that are just text floating in space.
@@ -332,6 +336,13 @@ Build in `~/prospect-pipeline/sites/<slug>/`:
      ```
    This applies to EVERY section where text sits on top of a photograph — hero, about, testimonials, CTA banners, page headers. No exceptions.
 
+   **CRITICAL — CONTACT FORM RELIABILITY (this silently fails in production):**
+   If the site has no backend, a form using a bare `mailto:` action (`enctype="text/plain"`) is not enough by itself — many browsers block or silently no-op a form-triggered mailto handoff, leaving the visitor with zero indication anything happened.
+   - Compose the `mailto:` link yourself in a small submit handler (subject + body built from the field values) and set `window.location.href` to it
+   - Always show a visible status message after submit confirming what should happen next
+   - Always include a manual fallback: a direct `mailto:` link with the same prefilled subject/body, plus a copy-to-clipboard option
+   - Never ship a contact form whose only feedback mechanism is "hope the browser handles it"
+
 5. **Images — every site MUST have at minimum:**
    - A hero image (full-width, atmospheric, sets the mood)
    - An about/story section image (business, workspace, or team)
@@ -403,6 +414,8 @@ Priority order:
 3. **Their Google Maps/Business photos** (downloadable via Apify). Interior, exterior shots.
 4. **Carefully chosen stock photos** for supporting/decorative slots ONLY.
 
+**Dedupe by content, not filename:** when building the image manifest from downloaded/scraped assets, watch for the same source photo saved at multiple resolutions or crops (common with scraped asset pipelines) — these must resolve to ONE gallery entry, not two. A shipped gallery had the identical photo appear twice for exactly this reason.
+
 **Step 4: Visual verification for every stock image**
 
 Before using a stock image, verify:
@@ -471,6 +484,11 @@ Single comprehensive pass covering functional, copy, and visual:
     - Empty or partially-filled form states look intentional, not broken
     - Every CTA has a real destination — no dead links left over from placeholder content
     - Re-check mobile viewport *after* any Bolder/Overdrive pass, not just after the initial build — effects that work at desktop width often break or lag on mobile
+11. **Mechanical self-checks (don't rely on memory of the rules above while deep in implementation):**
+    - Count `@keyframes` blocks plus distinct IntersectionObserver-driven reveal patterns in the shipped code. Fewer than 3 distinct techniques means the "MINIMUM 3 distinct animation types" rule wasn't actually met — go back and add more.
+    - Compute every heading `clamp()`'s maximum value in px. Any hero/section heading exceeding 96px → reduce the clamp max or rewrite the copy.
+    - Grep the stylesheet for every variant class referenced in template logic (`wide`, `tall`, `featured`, etc.) — a class with no matching rule means the intended layout variety isn't actually rendering.
+    - Actually scroll each page at the mobile viewport, not just load it at scroll position 0 — a header/nav that switches `position` at a breakpoint can lose persistent access to calls/navigation while scrolling, which checking the page only at the top will never reveal.
 
 ### Broken Image Check
 Before deploying, verify ALL images load:
@@ -551,3 +569,5 @@ This skill inherits the design philosophy from the main website-rebuild skill:
 ## Credit
 
 The Register check, the additional generic-tell rules (icon-tile, nested cards, decorative grid overlay, gray-on-color), and the optional Bolder/Overdrive intensity pass were adapted from the design-quality concepts in [`pbakaus/impeccable`](https://github.com/pbakaus/impeccable).
+
+The eyebrow-kicker/side-stripe/numbered-scaffolding bans, the 96px heading ceiling, the variant-class verification step, the mailto form reliability callout, the image-dedupe note, and the Phase 7 mechanical self-checks were added after real defects were found in two sites shipped with this skill lineage (2026-07-04) — not ported from another skill, but field-tested against actual output.
