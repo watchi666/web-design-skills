@@ -21,6 +21,8 @@ Run from the tool directory unless you pass absolute paths:
 cd /home/hermes/projekte/website-upgrade/tools/website-quality-scorer
 node bin/website-quality-scorer.mjs audit <url-or-path> --out <report-dir> --name <label>
 node bin/website-quality-scorer.mjs audit <url> --out <report-dir> --name <label> --lighthouse
+node bin/website-quality-scorer.mjs audit <url-or-path> --out <report-dir> --project <project-name> --history ./quality-history.jsonl
+node bin/website-quality-scorer.mjs history ./quality-history.jsonl --limit 10
 node bin/website-quality-scorer.mjs compare <old-url-or-path> <new-url-or-path> --out <report-dir>
 ```
 
@@ -50,6 +52,7 @@ The v2 CLI checks:
 - console messages
 - optional Lighthouse via `--lighthouse` when the local `lighthouse` command is installed
 - V2.1 Lighthouse performance diagnosis: critical metrics, top image/JS/main-thread causes, heavy assets, render-blocking hints
+- V3.0 optional benchmark history via `--history <jsonl>` and `history <jsonl>` for score trends, blockers, Lighthouse performance and project comparisons
 - `vision-brief.md` review pack with screenshot paths and a concrete Hermes/Vision review prompt
 
 ## Score model
@@ -151,7 +154,7 @@ Current limitations:
 - Lighthouse is optional via `--lighthouse` and reported separately; it does not yet alter the 100-point local-business score. V2.1 extracts performance causes from Lighthouse so low scores point to concrete assets/scripts instead of just saying “slow”.
 - Vision is implemented as a `vision-brief.md` review pack, not as an automatic in-CLI model call. Run Hermes `vision_analyze` on screenshots when taste/AI-slop judgement matters.
 - Linkcheck covers HTTP(S) URLs from the rendered page; `file://` targets skip HTTP link validation.
+- Benchmark history is JSONL and append-only; it is good for trends and comparisons, not a full dashboard/database yet.
 - Copy semantics are still mostly pattern-based.
-- No persistent benchmark database yet.
 
 Use it as a TÜV checklist and scorecard, not as a final creative director.
