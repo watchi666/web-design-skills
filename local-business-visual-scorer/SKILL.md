@@ -49,6 +49,7 @@ The v2 CLI checks:
 - AI/placeholder tells: Lorem Ipsum, Direction A/B, internal labels, AI image filenames, em dash
 - console messages
 - optional Lighthouse via `--lighthouse` when the local `lighthouse` command is installed
+- V2.1 Lighthouse performance diagnosis: critical metrics, top image/JS/main-thread causes, heavy assets, render-blocking hints
 - `vision-brief.md` review pack with screenshot paths and a concrete Hermes/Vision review prompt
 
 ## Score model
@@ -147,7 +148,7 @@ This scorer intentionally consolidates rules from:
 
 Current limitations:
 
-- Lighthouse is optional via `--lighthouse` and reported separately; it does not yet alter the 100-point local-business score.
+- Lighthouse is optional via `--lighthouse` and reported separately; it does not yet alter the 100-point local-business score. V2.1 extracts performance causes from Lighthouse so low scores point to concrete assets/scripts instead of just saying “slow”.
 - Vision is implemented as a `vision-brief.md` review pack, not as an automatic in-CLI model call. Run Hermes `vision_analyze` on screenshots when taste/AI-slop judgement matters.
 - Linkcheck covers HTTP(S) URLs from the rendered page; `file://` targets skip HTTP link validation.
 - Copy semantics are still mostly pattern-based.
