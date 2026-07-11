@@ -22,7 +22,8 @@ cd /home/hermes/projekte/website-upgrade/tools/website-quality-scorer
 node bin/website-quality-scorer.mjs audit <url-or-path> --out <report-dir> --name <label>
 node bin/website-quality-scorer.mjs audit <url> --out <report-dir> --name <label> --lighthouse
 node bin/website-quality-scorer.mjs audit <url-or-path> --out <report-dir> --project <project-name> --history ./quality-history.jsonl
-node bin/website-quality-scorer.mjs history ./quality-history.jsonl --limit 10
+node bin/website-quality-scorer.mjs history <jsonl> [--limit <n>]
+node bin/website-quality-scorer.mjs history <jsonl> --mode rank
 node bin/website-quality-scorer.mjs compare <old-url-or-path> <new-url-or-path> --out <report-dir>
 ```
 
@@ -52,7 +53,8 @@ The v2 CLI checks:
 - console messages
 - optional Lighthouse via `--lighthouse` when the local `lighthouse` command is installed
 - V2.1 Lighthouse performance diagnosis: critical metrics, top image/JS/main-thread causes, heavy assets, render-blocking hints
-- V3.0 optional benchmark history via `--history <jsonl>` and `history <jsonl>` for score trends, blockers, Lighthouse performance and project comparisons
+- V3.0 optional benchmark history via `--history <jsonl>` and `history <jsonl>`
+- V3.1 `history --mode rank` for project-level leaderboard (best/worst/average performance, blocker rate) for score trends, blockers, Lighthouse performance and project comparisons
 - `vision-brief.md` review pack with screenshot paths and a concrete Hermes/Vision review prompt
 
 ## Score model
