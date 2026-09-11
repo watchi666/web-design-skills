@@ -138,10 +138,17 @@ Before writing ANY code, you must describe in plain English:
 
 Write this into `REBUILD_PLAN.md` before touching any implementation file (`index.html`, CSS, JS, Astro, or otherwise).
 
+**Calibrate three dials alongside the aesthetic direction** — these are orthogonal to the style category above (a "clean/luxury minimal" site can still sit anywhere on Motion) and force a concrete choice instead of a vibe:
+- `DESIGN_VARIANCE` (1 = orderly/symmetrical, 10 = highly asymmetric/experimental)
+- `MOTION_INTENSITY` (1 = static, 10 = cinematic)
+- `VISUAL_DENSITY` (1 = airy/gallery-like, 10 = tightly packed)
+
+Default for a local-business site: `7 / 4 / 4`. A trust-first business (medical, legal, financial) should pull toward `4 / 2 / 5`; a creative/experimental business can push toward `9 / 6 / 4`. State the three numbers in `REBUILD_PLAN.md` next to the aesthetic direction — they're what keeps "bold" from meaning something different on every build.
+
 ### Typography
 - Beautiful, unique fonts from Google Fonts links or self-hosted font files. Use `@fontsource` only when a framework/build system was explicitly selected.
-- **BANNED:** Inter, Roboto, Arial, Helvetica, system fonts, Space Grotesk, Lato, Open Sans, Source Sans Pro
-- **INSTEAD:** Distinctive display font + refined body font. Fraunces, Playfair Display, Clash Display, Cabinet Grotesk, General Sans, Satoshi, Plus Jakarta Sans.
+- **BANNED:** Inter, Roboto, Arial, Helvetica, system fonts, Space Grotesk, Lato, Open Sans, Source Sans Pro, Fraunces, Instrument Serif — the last two were reasonable a year ago but are common enough now to read as a template default rather than a choice
+- **INSTEAD:** Distinctive display font + refined body font. Playfair Display, Clash Display, Cabinet Grotesk, General Sans, Satoshi, Plus Jakarta Sans. Reserve a serif display face for businesses that are genuinely editorial, heritage, literary, or luxury — don't reach for one just because it reads as "elevated."
 - Use the FULL typographic range: hero headings should be 56-80px at minimum, clamp()'d fluidly, but capped at a **96px ceiling** — after writing the clamp(), compute its maximum value in px and confirm it does not exceed 96px. A shipped build hit 118px with no ceiling check catching it; past 96px the page is shouting, not designing. Extreme weight contrast (300 vs 800, not 400 vs 600)
 - Body minimum 16px, line-height 1.5-1.65
 - `text-wrap: balance` on headings, `font-variant-numeric: tabular-nums` on numbers
@@ -189,6 +196,20 @@ Write this into `REBUILD_PLAN.md` before touching any implementation file (`inde
 - **BANNED:** a small uppercase tracked label ("eyebrow"/kicker) placed above the heading of every section. One deliberate label used once as a genuine brand device is voice; the same treatment repeated on a third, fourth, fifth section is the tell — verified in a real shipped build where this pattern reached 11 of 11 sections despite the rules above already being in place. If you catch yourself adding the same label pattern a third time, stop and vary the section's hierarchy some other way instead.
 - **BANNED:** a colored `border-left`/`border-right` stripe as a card or list-item accent, including on numbered process steps. Give a numeral visual weight through large/distinctive typography instead of a side border.
 - **BANNED:** sequential numbering (01/02/03…) applied to a list that has no real order — a services list, a feature grid. Numbers earn their place only on a genuine sequence (an actual multi-step process, a timeline) where the order itself carries information.
+- **BANNED:** a modal for a task that needs neither interruption nor protected focus. A confirmation, a gallery lightbox with no real navigation need, or a "learn more" panel almost never needs to steal the whole screen — expand in place or navigate instead.
+- **BANNED:** hard offset shadows (`box-shadow: 4px 4px 0`, zero blur) outside a world that is genuinely neobrutalist. It's a costume, not a depth system — a project that didn't commit to that aesthetic doesn't earn it as a shortcut.
+- **BANNED:** monospace type used as a costume for "technical" or "modern" rather than for actual code, data, or measurement.
+- **BANNED:** Unicode glyphs or emoji standing in for an icon system. Use a real icon library or authored SVG, one consistent stroke and weight throughout.
+- **BANNED:** a geometric mask (circle/polygon/radial-gradient cutout) standing in for an organic photographic edge — it reads as a cheap effect, worse than no effect at all. Either use the photo's natural rectangle or produce a real cut-out asset.
+- **Light or dark theme:** pick it from the use scene (who's looking, where, under what ambient light), not from the business category by reflex. A dark theme isn't automatically "premium," and a light theme isn't automatically "friendly."
+
+### Browser-Level Polish
+The parts you didn't hand-draw still carry the design and are the cheapest signal a site was actually built rather than assembled from a template. Theme these from the site's own palette:
+- Text selection color (`::selection`)
+- Custom scrollbar styling where it fits the aesthetic (don't leave the OS default on an otherwise fully art-directed page)
+- Focus ring color/style (must still be clearly visible — this is a re-skin, not a removal)
+- Link/heading underline offset
+- `font-variant-numeric: tabular-nums` on any numerals that appear in aligned columns (pricing, stats)
 
 ### Visual Depth & Atmosphere
 - **BANNED:** Flat solid-color section backgrounds with nothing else. Plain white sections. Sections that are just text floating in space.
@@ -416,7 +437,7 @@ Build in `~/prospect-pipeline/sites/<slug>/` using the standard static stack unl
    - Optimize images manually: correct dimensions, WebP/AVIF when useful, no huge originals in hero
    - Use `loading="lazy"` for below-the-fold images and explicit `width`/`height` or `aspect-ratio` to prevent layout shift
    - Self-host critical assets when possible
-   - Target: Lighthouse 95+
+   - Target Lighthouse 95+ as a build goal — only state an actual score in QA_REPORT.md or the Phase 10 summary if Lighthouse was actually run against the built site. Never write down a specific number that wasn't measured.
 
 ### Image Selection Protocol
 
@@ -593,7 +614,7 @@ Before deploying, verify ALL images load:
 ### Phase 8: Pre-Deploy Checklist
 Verify every item:
 - SEO: unique meta tags, OG tags, structured data, heading hierarchy, alt text, sitemap, robots.txt
-- Performance: images optimized, fonts self-hosted, all pages static. Lighthouse 95+.
+- Performance: images optimized, fonts self-hosted, all pages static, built for Lighthouse 95+ (only report an actual score if you ran Lighthouse — otherwise describe the build characteristics, don't state a number).
 - Accessibility: all colors WCAG AA. Keyboard nav works. Focus indicators visible.
 - Functionality: every link, form, element works. Mobile nav works. 404 page works.
 - Content: no placeholders, no typos, all business info accurate.
@@ -625,7 +646,7 @@ Design:        [brief description of aesthetic]
 Key Features:  [list notable features]
 SEO:           LocalBusiness schema, 8 target keywords, sitemap
 Accessibility: WCAG AA, all contrast verified
-Performance:   Static HTML, zero JS, Lighthouse 95+
+Performance:   Static HTML, zero JS, built for Lighthouse 95+ (state an actual score only if measured)
 Ready for:     /prospect-deploy
 ```
 
@@ -668,3 +689,5 @@ New reference files (added 2026-07-04):
 The Register check, the additional generic-tell rules (icon-tile, nested cards, decorative grid overlay, gray-on-color), and the optional Bolder/Overdrive intensity pass were adapted from the design-quality concepts in [`pbakaus/impeccable`](https://github.com/pbakaus/impeccable).
 
 The eyebrow-kicker/side-stripe/numbered-scaffolding bans, the 96px heading ceiling, the variant-class verification step, the mailto form reliability callout, the image-dedupe note, and the Phase 7 mechanical self-checks were added after real defects were found in two sites shipped with this skill lineage (2026-07-04) — not ported from another skill, but field-tested against actual output.
+
+The modal/hard-shadow/monospace-costume/emoji-icon/geometric-mask bans and the Browser-Level Polish section (2026-09-11) were adapted from `craft-floor.md` in [`pbakaus/impeccable`](https://github.com/pbakaus/impeccable). The Three Design Dials calibration and the unmeasured-Lighthouse honesty rule (2026-09-11) were adapted from the `design-taste-frontend` skill. The Fraunces/Instrument Serif removal from the recommended font list (2026-09-11) resolves a direct contradiction with `design-taste-frontend`, which bans both as defaults. (The static-first stack switch, conversion patterns, mobile-first checklist, screenshot verification, and German copy-discipline reference file were a separate, independently field-tested update — see the reference file list above, not this credit line.)
