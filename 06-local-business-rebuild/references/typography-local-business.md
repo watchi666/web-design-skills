@@ -8,6 +8,7 @@ Do not treat the first pretty display/body pairing as final. Typography is part 
 ## Avoid as defaults
 - Do not default to `Playfair Display + DM Sans` for every premium local-business redesign. It can read as AI-premium-template: glossy, tasteful, but too familiar.
 - Do not reach for startup defaults (`Inter`, `Poppins`, `Montserrat`, `Roboto`, generic grotesks) when the user asked for no AI slop.
+- Do not reach for `Fraunces` or `Instrument Serif` either — SKILL.md bans both as defaults for the same reason (common enough now to read as a template default, not a choice). Reserve a serif display face for businesses that are genuinely editorial, heritage, literary, or luxury, and pick one of the alternatives below instead.
 - Do not defend the original font choice. Change it, build it, visually verify it, and redeploy.
 
 ## Better replacement pattern
@@ -15,10 +16,10 @@ Pick a pairing whose personality matches the business material:
 
 | Business feel | Display direction | Body/UI direction |
 |---|---|---|
-| Interior surfaces, plaster, limewash, editorial craft | Newsreader, Fraunces, Cormorant Garamond with restraint | Source Sans 3, IBM Plex Sans, Atkinson Hyperlegible |
+| Interior surfaces, plaster, limewash, editorial craft | Newsreader, Cormorant Garamond with restraint | Source Sans 3, IBM Plex Sans, Atkinson Hyperlegible |
 | Industrial / workshop / metal / roofing | Archivo, Roboto Slab alternatives, Besley, Barlow Condensed with care | IBM Plex Sans, Source Sans 3 |
 | Premium but quiet local service | Literata, Newsreader, Libre Baskerville | Source Sans 3, Work Sans if not overused |
-| Traditional craft / heritage | Cormorant Garamond, Fraunces, Vollkorn | Source Sans 3, IBM Plex Sans |
+| Traditional craft / heritage | Cormorant Garamond, Vollkorn, Newsreader | Source Sans 3, IBM Plex Sans |
 
 ## Verification steps
 1. Update font packages/imports and global CSS.
