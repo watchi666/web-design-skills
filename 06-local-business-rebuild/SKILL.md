@@ -381,6 +381,8 @@ Build in `~/prospect-pipeline/sites/<slug>/` using the standard static stack unl
    - Add a real WhatsApp CTA for German local-service sites when requested or when the original site already uses one: `https://wa.me/<countrycode-number>?text=<encoded message>`. Use the same verified phone number as the `tel:` link.
    - Never ship a contact form whose only feedback mechanism is "hope the browser handles it"
 
+   See `references/local-business-contact-and-case-study-cta.md` for a compact static-site pattern covering source-parity contact sections, WhatsApp links, and animated case-study CTAs.
+
 5. **Conversion Patterns — Apply at least 3 of 5:**
    The site must convert, not just look good. Read `references/conversion-patterns.md` for copy-paste code. Before shipping, verify at least 3 of these patterns are present:
    - **Trust Bar** with verified data metrics (years, projects, rating, response time) — immediately after hero
@@ -653,6 +655,14 @@ Ready for:     /prospect-deploy
 This skill inherits the design philosophy from the main website-rebuild skill:
 - [design-rules.md](references/design-rules.md) — Non-negotiable design rules
 - [accessibility-spec.md](references/accessibility-spec.md) — WCAG AA specification
+
+Hermes/WebsiteUpgrade adaptations that must be checked before a non-standard run:
+- [hermes-direct-url-workdir-adaptation.md](references/hermes-direct-url-workdir-adaptation.md) — use when the user gives a live URL plus explicit workdir instead of the prospect-pipeline layout.
+- [direct-url-github-deploy-lessons.md](references/direct-url-github-deploy-lessons.md) — safe direct URL → local rebuild → GitHub/Vercel pattern; avoid committing raw mirrored builder HTML.
+- [local-business-contact-and-case-study-cta.md](references/local-business-contact-and-case-study-cta.md) — static contact-section parity, WhatsApp CTA, mailto form handler, and project/case-study discovery CTA pattern.
+- [hero-file-in-full-redesign.md](references/hero-file-in-full-redesign.md) — supplied hero/prototype is the opening section, not the whole site.
+- [hero-animation-redesign-integration.md](references/hero-animation-redesign-integration.md) — preserve hero animation mechanics, but restyle logo, typography, colors, copy, CTAs, overlay, and photo grading to match the final site.
+- [typography-local-business.md](references/typography-local-business.md) — local craft/trades typography corrections when a design feels generic or like AI slop.
 
 New reference files (added 2026-07-04):
 - [conversion-patterns.md](references/conversion-patterns.md) — 5 conversion patterns with copy-paste code: Trust Bar, Floating CTA, FAQ Accordion, Lead Magnet, JSON-LD with reviews
